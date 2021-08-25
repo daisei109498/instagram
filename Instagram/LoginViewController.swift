@@ -10,6 +10,25 @@ class LoginViewController: UIViewController {
 
     // ログインボタンをタップしたときに呼ばれるメソッド
     @IBAction func handleLoginButton(_ sender: Any) {
+        if let address = mailAddressTextField.text, let password = passwordTextField.text {
+
+            // アドレスとパスワード名のいずれかでも入力されていない時は何もしない
+            if address.isEmpty || password.isEmpty {
+                return
+            }
+
+            Auth.auth().signIn(withEmail: address, password: password) { authResult, error in
+                if let error = error {
+                    print("DEBUG_PRINT: " + error.localizedDescription)
+                    return
+                }
+                print("DEBUG_PRINT: ログインに成功しました。")
+
+                // 画面を閉じてタブ画面に戻る
+                self.dismiss(animated: true, completion: nil)
+            }
+        }
+        
     }
 
     //アカウント作成ボタンをタップしたときに呼ばれるメソッド
@@ -62,6 +81,17 @@ class LoginViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // 背景をタップしたらdismissKeyboardメソッドを呼ぶように設定する
+        let tapGesture: UITapGestureRecognizer = UITapGestureRecognizer(target:self, action:#selector(dismissKeyboard))
+        self.view.addGestureRecognizer(tapGesture)
+        
     }
-
+    
+    
+    @objc func dismissKeyboard(){
+        // キーボードを閉じる
+        view.endEditing(true)
+    }
+    
 }
